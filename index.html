@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09090b">
+  <title>CineWave — Discover your next watch</title>
+  <meta name="description" content="A Netflix-inspired static streaming demo with free sample videos and a custom player.">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="CineWave home"><span class="brand-mark">▶</span> CINEWAVE</a>
+    <nav class="nav"><a class="active" href="#home">Home</a><a href="#movies">Movies</a><a href="#series">Series</a><a href="#shorts">Free Clips</a></nav>
+    <div class="top-actions"><label class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Search titles..." aria-label="Search titles"></label><button id="profile" class="profile" title="Demo profile">CW</button></div>
+  </header>
+
+  <main id="home">
+    <section class="hero" aria-label="Featured title">
+      <div class="hero-backdrop"></div>
+      <div class="hero-content">
+        <p class="eyebrow"><span class="live-dot"></span> CINEWAVE ORIGINALS · DEMO</p>
+        <h1>Beyond<br><span>the Horizon</span></h1>
+        <div class="meta"><span class="rating">★ 9.1</span><span>2026</span><span class="pill">Adventure</span><span>4K concept</span></div>
+        <p class="hero-copy">A journey into the unknown. Explore cinematic sample videos in this free, front-end streaming experience.</p>
+        <div class="hero-buttons"><button class="btn btn-light" id="heroPlay">▶ &nbsp; Play Demo</button><a class="btn btn-glass" href="#movies">ⓘ &nbsp; Explore library</a></div>
+        <p class="small-note">Demo interface — sample clips only, not a commercial movie catalog.</p>
+      </div>
+      <div class="hero-bottom-fade"></div>
+    </section>
+
+    <section class="continue-section" id="movies">
+      <div class="section-heading"><div><p class="eyebrow">PICK UP THE VIBE</p><h2>Featured for you</h2></div><span class="section-hint">Free sample videos</span></div>
+      <div class="catalog" id="catalog"></div>
+    </section>
+    <section class="row-section" id="series"><div class="section-heading"><div><p class="eyebrow">STORIES IN MOTION</p><h2>Series & documentaries</h2></div><a class="text-link" href="#shorts">Browse clips ↗</a></div><div class="catalog compact" id="seriesCatalog"></div></section>
+    <section class="row-section" id="shorts"><div class="section-heading"><div><p class="eyebrow">QUICK WATCH</p><h2>Short clips</h2></div><span class="section-hint">No sign-in required</span></div><div class="catalog compact" id="shortCatalog"></div></section>
+    <section class="info-strip"><div class="info-icon">▶</div><div><h3>A personal streaming UI, built with HTML, CSS & JavaScript.</h3><p>Use this as a portfolio project. The included videos are public sample/demo clips; add only videos you own or have permission to embed.</p></div><a href="README.md">Project notes ↗</a></section>
+  </main>
+
+  <footer><a class="brand small-brand" href="#"><span class="brand-mark">▶</span> CINEWAVE</a><p>Independent front-end demo. Not affiliated with Netflix or any film studio.</p><div class="footer-links"><a href="#home">Home</a><a href="#movies">Library</a><a href="README.md">About this project</a></div><small>© 2026 CineWave Demo</small></footer>
+
+  <div class="player-overlay" id="playerOverlay" aria-hidden="true">
+    <div class="player-shell" role="dialog" aria-modal="true" aria-label="Video player">
+      <div class="player-top"><div><p class="eyebrow">NOW PLAYING</p><h2 id="playerTitle">Demo video</h2></div><button class="close-player" id="closePlayer" aria-label="Close player">✕</button></div>
+      <video id="videoPlayer" controls playsinline preload="metadata" poster="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1400&q=85"></video>
+      <div class="player-bottom"><span id="playerDescription">Public sample clip</span><a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer">Open source ↗</a></div>
+      <p class="player-tip">If a clip is unavailable in your region, use “Open source” or replace its URL in <code>script.js</code>.</p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
