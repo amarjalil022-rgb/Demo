@@ -1,1 +1,612 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
+<meta name="description" content="CineWave — discover and watch movies, animation and cinematic videos in one place.">
+<title>CineWave — Movies & Entertainment</title>
+
+<style>
+:root {
+  --bg: #08090d;
+  --panel: #11131b;
+  --text: #f7f7fb;
+  --muted: #a5a7b4;
+  --red: #e50914;
+  --border: rgba(255,255,255,.10);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+header {
+  height: 72px;
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(8,9,13,.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.logo {
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  white-space: nowrap;
+}
+.logo span { color: var(--red); }
+nav { display: flex; gap: 23px; color: #d4d5dd; font-size: 14px; }
+nav a:hover { color: white; }
+.header-right { display: flex; align-items: center; gap: 13px; }
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #151720;
+}
+.search-box input {
+  width: 145px;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: white;
+  background: transparent;
+}
+.search-box input::placeholder { color: #9295a3; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg,#ef4444,#7c3aed);
+  font-weight: bold;
+}
+.hero {
+  min-height: 540px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 65px 6% 100px;
+  background:
+    linear-gradient(90deg,#08090d 0%,rgba(8,9,13,.92) 24%,rgba(8,9,13,.48) 58%,rgba(8,9,13,.1) 100%),
+    linear-gradient(0deg,#08090d 0%,transparent 45%),
+    url("https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=2000&q=85")
+    center 40%/cover no-repeat;
+}
+.hero-content { max-width: 610px; position: relative; z-index: 1; }
+.eyebrow {
+  color: #ff626a; text-transform: uppercase;
+  font-size: 12px; font-weight: 800; letter-spacing: 3px;
+}
+.hero h1 {
+  font-size: clamp(42px,7vw,76px);
+  line-height: .98;
+  letter-spacing: -3px;
+  margin: 18px 0;
+}
+.hero p {
+  max-width: 500px;
+  color: #d0d1d9;
+  line-height: 1.8;
+  font-size: 15px;
+}
+.meta { color: #d6d7df; font-size: 13px; margin: 18px 0 24px; }
+.meta span { margin-right: 12px; }
+.quality {
+  border: 1px solid #9295a3;
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 10px;
+}
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  border: 0; border-radius: 7px; padding: 13px 20px;
+  font-weight: 800; display: inline-flex;
+  align-items: center; justify-content: center; gap: 9px;
+}
+.btn-primary { background: var(--red); color: white; }
+.btn-primary:hover { background: #ff2631; }
+.btn-secondary { background: rgba(255,255,255,.14); color: white; }
+.btn-secondary:hover { background: rgba(255,255,255,.23); }
+
+main { padding: 0 5% 55px; }
+.section { margin-top: 34px; scroll-margin-top: 90px; }
+.section-head {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; margin-bottom: 17px;
+}
+.section h2 { margin: 0; font-size: 22px; letter-spacing: -.5px; }
+.section-note { color: var(--muted); font-size: 12px; }
+.filters {
+  display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 23px;
+}
+.filter {
+  background: #171923; color: #d8d9e2;
+  border: 1px solid var(--border);
+  border-radius: 30px; padding: 9px 16px;
+}
+.filter.active, .filter:hover {
+  background: var(--red); border-color: var(--red); color: white;
+}
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 21px 15px;
+}
+.movie {
+  min-width: 0; cursor: pointer; position: relative;
+  transition: transform .2s ease;
+}
+.movie:hover { transform: translateY(-5px); }
+.poster {
+  aspect-ratio: 2/3; overflow: hidden; position: relative;
+  border-radius: 9px; background: #171923;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.poster img {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block; transition: transform .35s ease;
+}
+.movie:hover .poster img { transform: scale(1.06); }
+.poster::after {
+  content: ""; position: absolute; inset: 35% 0 0;
+  background: linear-gradient(transparent,rgba(0,0,0,.72));
+  pointer-events: none;
+}
+.poster-play {
+  position: absolute; z-index: 2; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(229,9,20,.95); color: white;
+  opacity: 0; transition: opacity .2s;
+  font-size: 19px;
+}
+.movie:hover .poster-play { opacity: 1; }
+.tag {
+  position: absolute; z-index: 3; top: 10px; left: 9px;
+  background: var(--red); color: white;
+  border-radius: 4px; padding: 5px 7px;
+  font-size: 9px; font-weight: 900; text-transform: uppercase;
+}
+.movie-info { padding: 11px 2px 0; }
+.movie-title {
+  font-size: 14px; font-weight: 800;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.movie-meta {
+  color: var(--muted); font-size: 11px;
+  margin-top: 7px; display: flex; justify-content: space-between; gap: 5px;
+}
+.movie-rating { color: #f5c451; }
+.empty {
+  grid-column: 1/-1; padding: 35px;
+  text-align: center; color: var(--muted);
+  background: var(--panel); border-radius: 10px;
+}
+.feature-strip {
+  margin-top: 45px; padding: 27px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: linear-gradient(110deg,#171923,#101116);
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+}
+.feature-strip h2 { margin: 0 0 8px; }
+.feature-strip p { color: var(--muted); margin: 0; line-height: 1.6; font-size: 14px; }
+footer {
+  padding: 28px 5%; border-top: 1px solid var(--border);
+  color: var(--muted); font-size: 12px; line-height: 1.8;
+}
+footer .footer-top {
+  display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+}
+footer a { color: #e1e2e9; }
+footer a:hover { color: white; }
+.mobile-nav { display: none; }
+
+/* Video player modal */
+.modal {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,.91); align-items: center;
+  justify-content: center; padding: 20px;
+}
+.modal.open { display: flex; }
+.player-box { width: min(100%,1000px); position: relative; }
+.close {
+  position: absolute; right: 0; top: -46px;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid #555; background: #222; color: white;
+  font-size: 24px;
+}
+.player-title { margin: 0 50px 13px 0; font-size: 20px; }
+video {
+  width: 100%; max-height: 72vh; display: block;
+  background: black; border-radius: 8px;
+}
+.player-message { color: #d5d5df; font-size: 13px; line-height: 1.6; }
+.direct-link { color: #ff666e; text-decoration: underline; }
+body.modal-open { overflow: hidden; }
+
+@media (max-width: 1000px) {
+  .movie-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  nav { gap: 13px; }
+  .search-box input { width: 100px; }
+}
+@media (max-width: 700px) {
+  header { height: 62px; padding: 0 4%; gap: 10px; }
+  .logo { font-size: 23px; }
+  nav { display: none; }
+  .search-box { padding: 8px; }
+  .search-box input { width: 95px; font-size: 12px; }
+  .avatar { display: none; }
+  .hero { min-height: 490px; padding: 65px 5% 95px; background-position: 58% center; }
+  .hero h1 { font-size: 48px; letter-spacing: -2px; }
+  .hero p { font-size: 13px; }
+  main { padding: 0 4% 40px; }
+  .section h2 { font-size: 19px; }
+  .movie-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 19px 12px; }
+  .poster-play { opacity: 1; width: 40px; height: 40px; }
+  .feature-strip { align-items: flex-start; flex-direction: column; padding: 20px; }
+  .mobile-nav {
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 25; background: rgba(10,11,16,.97);
+    border-top: 1px solid var(--border);
+    justify-content: space-around; padding: 12px 4% calc(12px + env(safe-area-inset-bottom));
+  }
+  .mobile-nav a { color: #c5c6d0; font-size: 11px; text-align: center; }
+  .mobile-nav a span { display: block; font-size: 18px; margin-bottom: 4px; }
+  footer { padding-bottom: 85px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <a class="logo" href="#" aria-label="CineWave home">CINE<span>WAVE</span></a>
+
+  <nav aria-label="Main navigation">
+    <a href="#home">Home</a>
+    <a href="#catalog">Discover</a>
+    <a href="#animation">Animation</a>
+    <a href="#about">About</a>
+  </nav>
+
+  <div class="header-right">
+    <label class="search-box">
+      <span aria-hidden="true">⌕</span>
+      <input id="searchInput" type="search" placeholder="Search titles..." aria-label="Search videos">
+    </label>
+    <div class="avatar" title="CineWave">C</div>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="eyebrow">Your next watch starts here</div>
+    <h1>ESCAPE<br>INTO CINEMA.</h1>
+    <div class="meta">
+      <span>Featured</span>
+      <span>Animation & Film</span>
+      <span class="quality">HD</span>
+    </div>
+    <p>
+      Discover cinematic worlds, animated adventures and memorable
+      short films. Explore the collection and start watching in one click.
+    </p>
+    <div class="actions">
+      <button class="btn btn-primary" id="heroPlay">▶ Play Featured</button>
+      <a class="btn btn-secondary" href="#catalog">＋ Explore Library</a>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="section" id="catalog">
+    <div class="section-head">
+      <h2>Explore the Library</h2>
+      <span class="section-note" id="resultCount">Loading titles...</span>
+    </div>
+
+    <div class="filters" aria-label="Filter videos">
+      <button class="filter active" data-filter="All">All Videos</button>
+      <button class="filter" data-filter="Animation">Animation</button>
+      <button class="filter" data-filter="Adventure">Adventure</button>
+      <button class="filter" data-filter="Nature">Nature</button>
+      <button class="filter" data-filter="Shorts">Short Clips</button>
+      <button class="filter" data-filter="Watchlist">My List ♥</button>
+    </div>
+
+    <div class="movie-grid" id="movieGrid"></div>
+  </section>
+
+  <section class="section" id="animation">
+    <div class="section-head">
+      <h2>Animation & Open Films</h2>
+      <span class="section-note">Independent cinematic stories</span>
+    </div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.8;max-width:750px">
+      Discover open animated films and video samples. Some videos are short
+      previews, while availability and playback depend on their external hosts.
+    </p>
+  </section>
+
+  <section class="feature-strip" id="about">
+    <div>
+      <h2>Great stories. One destination.</h2>
+      <p>CineWave is a static entertainment website demo, designed for phones, tablets and desktops.</p>
+    </div>
+    <a class="btn btn-primary" href="#catalog">Browse Videos →</a>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-top">
+    <div>
+      <a class="logo" href="#">CINE<span>WAVE</span></a>
+      <p>A cinematic demo experience built with a single HTML file.</p>
+    </div>
+    <div>
+      <a href="#home">Home</a> ·
+      <a href="#catalog">Library</a> ·
+      <a href="#about">About</a>
+    </div>
+  </div>
+  <p>
+    Video files and poster images are served by external websites.
+    Their availability, licenses and terms may change. Use only content
+    you own or have permission to stream. CineWave is an independent demo
+    and is not affiliated with Netflix.
+  </p>
+  <p>© <span id="year"></span> CineWave. All rights reserved to their respective owners.</p>
+</footer>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <a href="#home"><span>⌂</span>Home</a>
+  <a href="#catalog"><span>▦</span>Discover</a>
+  <a href="#animation"><span>▶</span>Animation</a>
+  <a href="#about"><span>ⓘ</span>About</a>
+</nav>
+
+<!-- Custom HTML5 video player -->
+<div class="modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Video player">
+  <div class="player-box">
+    <button class="close" id="closePlayer" aria-label="Close video player">×</button>
+    <h2 class="player-title" id="playerTitle">Now Playing</h2>
+    <video id="videoPlayer" controls playsinline preload="metadata">
+      Your browser does not support HTML5 video.
+    </video>
+    <p class="player-message" id="playerMessage">
+      If the video does not load, try opening the source directly.
+    </p>
+    <a class="direct-link" id="directLink" href="#" target="_blank" rel="noopener noreferrer">
+      Open video source ↗
+    </a>
+  </div>
+</div>
+
+<script>
+/*
+  VIDEO CATALOG
+  Replace a video's "url" with a direct MP4/WebM URL you are allowed to use.
+  A webpage URL is not necessarily a playable video URL.
+*/
+const videos = [
+  {
+    id: 1,
+    title: "Sintel — Animated Fantasy",
+    category: "Animation",
+    year: "Open Film",
+    rating: "HD",
+    label: "Featured",
+    poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80",
+    url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    description: "A cinematic preview from the independent animated fantasy film Sintel."
+  },
+  {
+    id: 2,
+    title: "Big Buck Bunny",
+    category: "Animation",
+    year: "Open Film",
+    rating: "HD",
+    label: "Animation",
+    poster: "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=700&q=80",
+    url: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
+    description: "A short sample clip from the well-known animated open movie."
+  },
+  {
+    id: 3,
+    title: "Flower — Nature Close-up",
+    category: "Nature",
+    year: "CC0 Sample",
+    rating: "HD",
+    label: "Relax",
+    poster: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=700&q=80",
+    url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    description: "A relaxing close-up video of a flower."
+  },
+  {
+    id: 4,
+    title: "Big Buck Bunny — Quick Clip",
+    category: "Shorts",
+    year: "Sample",
+    rating: "HD",
+    label: "Quick Watch",
+    poster: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=700&q=80",
+    url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    description: "A short animated video sample for testing the player."
+  },
+  {
+    id: 5,
+    title: "Sintel — Short Preview",
+    category: "Adventure",
+    year: "Sample",
+    rating: "HD",
+    label: "Adventure",
+    poster: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80",
+    url: "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_2MB.mp4",
+    description: "A short fantasy-adventure video sample."
+  },
+  {
+    id: 6,
+    title: "Forest Escape",
+    category: "Nature",
+    year: "Nature Sample",
+    rating: "HD",
+    label: "Nature",
+    poster: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=700&q=80",
+    url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    description: "A nature-inspired poster with a sample video for player testing."
+  },
+  {
+    id: 7,
+    title: "Fantasy World",
+    category: "Adventure",
+    year: "Open Preview",
+    rating: "HD",
+    label: "Explore",
+    poster: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=700&q=80",
+    url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    description: "Explore a fantasy-inspired cinematic preview."
+  },
+  {
+    id: 8,
+    title: "Colorful Moments",
+    category: "Shorts",
+    year: "Short Clip",
+    rating: "HD",
+    label: "Shorts",
+    poster: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=700&q=80",
+    url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    description: "A short video sample for a quick watch."
+  }
+];
+
+let activeFilter = "All";
+let searchTerm = "";
+let watchlist = [];
+
+const grid = document.getElementById("movieGrid");
+const count = document.getElementById("resultCount");
+const modal = document.getElementById("videoModal");
+const player = document.getElementById("videoPlayer");
+const playerTitle = document.getElementById("playerTitle");
+const playerMessage = document.getElementById("playerMessage");
+const directLink = document.getElementById("directLink");
+
+function renderVideos() {
+  let filtered = videos.filter(video => {
+    const matchesSearch =
+      (video.title + " " + video.category + " " + video.description)
+      .toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilter =
+      activeFilter === "All" ||
+      video.category === activeFilter ||
+      (activeFilter === "Watchlist" && watchlist.includes(video.id));
+
+    return matchesSearch && matchesFilter;
+  });
+
+  count.textContent = filtered.length + (filtered.length === 1 ? " title" : " titles");
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty">No videos found. Try another search or category.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(video => `
+    <article class="movie" tabindex="0" role="button"
+      aria-label="Play ${escapeHTML(video.title)}" data-play="${video.id}">
+      <div class="poster">
+        <img src="${escapeHTML(video.poster)}"
+          alt="${escapeHTML(video.title)} poster"
+          loading="lazy"
+          onerror="this.style.opacity='.15'">
+        <span class="tag">${escapeHTML(video.label)}</span>
+        <span class="poster-play" aria-hidden="true">▶</span>
+      </div>
+      <div class="movie-info">
+        <div class="movie-title">${escapeHTML(video.title)}</div>
+        <div class="movie-meta">
+          <span>${escapeHTML(video.year)} · ${escapeHTML(video.category)}</span>
+          <span class="movie-rating">★ ${escapeHTML(video.rating)}</span>
+        </div>
+        <button type="button" data-save="${video.id}"
+          style="margin-top:10px;border:1px solid #343642;background:#151720;color:#e8e8ef;border-radius:5px;padding:6px 9px;font-size:11px">
+          ${watchlist.includes(video.id) ? "♥ In My List" : "＋ My List"}
+        </button>
+      </div>
+    </article>
+  `).join("");
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[character]);
+}
+
+function playVideo(id) {
+  const video = videos.find(item => item.id === Number(id));
+  if (!video) return;
+
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
+
+  playerTitle.textContent = video.title;
+  playerMessage.textContent = video.description +
+    " If playback fails, the external host may be unavailable.";
+  player.src = video.url;
+  directLink.href = video.url;
+  modal.classList.add("open");
+  document.body.classList.add("modal-open");
+
+  player.load();
+  player.play().catch(() => {
+    playerMessage.textContent =
+      video.description + " Press Play in the video controls to start playback.";
+  });
+}
+
+function closePlayer() {
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
+  modal.classList.remove("open");
+  document.body.classList.remove("modal-open");
+}
+
+grid.addEventListener("click", event => {
+  const saveButton = event.target.closest("[data-save]");
+  if (saveButton) {
+    event.stopPropagation();
+    const id = Number(saveButton.dataset.save);
+    watchlist = watchlist.includes(id)
+      ? watchlist.filter(item => item !== id)
+      : [...watchlist, id];
+    renderVideos();
+    return;
+  }
+
+  const movie = event.target.closest("[data-play]");
+  i
